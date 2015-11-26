@@ -50,7 +50,7 @@ func main() {
 			"0F1iTCjapfcoFUupsINMc-6X", "http://localhost:8080/auth/callback/google"),
 	)
 
-	r := newRoom()
+	r := newRoom(UseGravatar)
 	r.tracer = trace.New(os.Stdout)
 
 	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
