@@ -15,6 +15,11 @@ import (
 	"github.com/stretchr/objx"
 )
 
+var avatars Avatar = TryAvatars{
+	UseFileSystemAvatar,
+	UseAuthAvatar,
+	UseGravatar}
+
 // templ represents a single template
 type templateHandler struct {
 	filename string
@@ -50,7 +55,7 @@ func main() {
 			"0F1iTCjapfcoFUupsINMc-6X", "http://localhost:8080/auth/callback/google"),
 	)
 
-	r := newRoom(UseGravatar)
+	r := newRoom()
 	r.tracer = trace.New(os.Stdout)
 
 	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
@@ -67,6 +72,12 @@ func main() {
 		MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login",
 		&templateHandler{filename: "login.html"})
+	http.Handle("/upload", &templateHandler{filename: "upload.html"})
+
+	http.Handle("/avatars/",
+		http.StripPrefix("/avatars/", http.FileServer(http.Dir("./avatars"))))
+
+	http.HandleFunc("/uploader", uploaderHandler)
 	http.HandleFunc("/auth/", loginHandler)
 	http.Handle("/room", r)
 
